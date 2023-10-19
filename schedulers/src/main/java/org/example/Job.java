@@ -2,56 +2,69 @@ package org.example;
 
 import java.time.LocalDateTime;
 
-public class Job {
+public class Job implements IWork{
+
+    private LocalDateTime nextExecutionTime = LocalDateTime.now();
     private IRunNotSafeAction action;
-    private IProvideNextExecutionTime nextTimeProvider = ()-> null;
-    private IHandleExceptions handleExceptions = ex->{};
-    private ICompleteTasks singleActionCompleted = ()->{};
-    private ICompleteTasks completed=()->{};
-    private LocalDateTime executionTime;
+    private IScheduleWork scheduler;
+    private IProvideNextExecutionTime nextExecutionTimeProvider;
+    private IHandleExceptions errorHandler = (ex)->{};
+    private ICompleteTasks singleActionCompleted=()->{};
+    private ICompleteTasks onCompleted=()->{};
 
 
-    public Job(IRunNotSafeAction action) {
-        this.action = action;
+
+    public Job(IRunNotSafeAction action, IScheduleWork scheduler){
+        this.action=action;
+        this.scheduler=scheduler;
     }
 
-    public Job useExecutionTimeProvider(IProvideNextExecutionTime nextTimeProvider) {
-        this.nextTimeProvider = nextTimeProvider;
-        this.executionTime = nextTimeProvider.provideTime();
+    @Override
+    public IWork useExecutionTimeProvider(IProvideNextExecutionTime provider) {
+         nextExecutionTimeProvider=provider;
+         nextExecutionTime = nextExecutionTimeProvider.provideNextExecutionTime();
+         return this;
+    }
+
+    @Override
+    public IWork onError(IHandleExceptions errorHandler) {
+        this.errorHandler=errorHandler;
         return this;
     }
 
-    public Job onError(IHandleExceptions handleExceptions) {
-        this.handleExceptions = handleExceptions;
+    @Override
+    public IWork onSingleActionCompleted(ICompleteTasks completedAction) {
+        singleActionCompleted=completedAction;
         return this;
     }
 
-
-    public Job onSingleActionCompleted(ICompleteTasks singleActionCompleted) {
-        this.singleActionCompleted = singleActionCompleted;
+    @Override
+    public IWork onCompleted(ICompleteTasks completeAction) {
+        this.onCompleted=completeAction;
         return this;
     }
 
-    public Job onCompleted(ICompleteTasks completed) {
-        this.completed = completed;
-        return this;
+    @Override
+    public void schedule() {
+        scheduler.getJobs().add(this);
     }
 
-    public void Schedule() {
-        Scheduler.getInstance().addJob(this);
-    }
 
+    @Override
     public void execute() {
-        if(this.executionTime==null)return;
+        if(nextExecutionTime==null) return;
+        if(nextExecutionTime.isAfter(LocalDateTime.now()))return;
         try{
-            this.action.executeNotSafeAction();
-            this.singleActionCompleted.complete();
+            action.executeNotSafeAction();
+            singleActionCompleted.complete();
         }catch (Exception ex){
-            this.handleExceptions.handle(ex);
-        }finally {
-            this.executionTime = nextTimeProvider.provideTime();
-            if(this.executionTime==null)
-                completed.complete();
+            errorHandler.handle(ex);
+        }
+        finally {
+            if(nextExecutionTimeProvider==null) return;
+            nextExecutionTime = nextExecutionTimeProvider.provideNextExecutionTime();
+            if(nextExecutionTime == null)
+                onCompleted.complete();
         }
     }
 }

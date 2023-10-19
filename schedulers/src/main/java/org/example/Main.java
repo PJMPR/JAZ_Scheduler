@@ -63,12 +63,28 @@ public class Main {
          * UAWAGA !
          * Najlepiej zrobić tak, aby klasa Chron implementowała "buildera" (budowniczego) - w sensie nie robić buildera jako odrębnej klasy
          */
-        IProvideNextExecutionTime startsNowFor5SecondsMax5TimesWithDurationOf500Millis = Chron.builder()
+
+        var chron = Chron.builder();
+        chron.setStartTime(LocalDateTime.now());
+        chron.setEndDate(LocalDateTime.now().plusSeconds(40));
+        chron.setIntervalDuration(Duration.ofMillis(300));
+
+
+        IProvideNextExecutionTime startsNowFor5SecondsMax5TimesWithDurationOf500Millis =
+                Chron.builder()
                 .setStartTime(LocalDateTime.now())
                 .setEndDate(LocalDateTime.now().plusSeconds(5))
                 .setMaxExecutionTimes(5)
                 .setIntervalDuration(Duration.ofMillis(500))
                 .buildNextTimeExecutionProvider();
+
+//        startsNowFor5SecondsMax5TimesWithDurationOf500Millis.provideNextExecutionTime();// czas teraz
+//        startsNowFor5SecondsMax5TimesWithDurationOf500Millis.provideNextExecutionTime();// czas teraz + 500 ms
+//        startsNowFor5SecondsMax5TimesWithDurationOf500Millis.provideNextExecutionTime();// czas teraz + 1000 ms
+//        startsNowFor5SecondsMax5TimesWithDurationOf500Millis.provideNextExecutionTime();// czas teraz + 1500 ms
+//        startsNowFor5SecondsMax5TimesWithDurationOf500Millis.provideNextExecutionTime();// czas teraz + 2000 ms
+//        //.....
+//        startsNowFor5SecondsMax5TimesWithDurationOf500Millis.provideNextExecutionTime();// null
 
 
         /**
@@ -83,7 +99,9 @@ public class Main {
             throwAnError.executeNotSafeAction();
             System.out.println("tutaj powinien wystąpić błąd, a nie wystąpił :(");
             return;
-            }catch (Exception ex){}
+            }catch (Exception ex){
+
+        }
 
         /**
          * wykorzystajmy metodę,
@@ -130,7 +148,7 @@ public class Main {
                 .onError(ex->handleException(ex))
                 .onSingleActionCompleted(()->System.out.println("wykonano akcje z powodzeniem"))
                 .onCompleted(()->System.out.println("Zakończyłem pracę"))
-                .Schedule();
+                .schedule();
 
         /**
          * Jeżeli już tutaj się znalazłeś i samemu rozwiązałeeś powyższe zadania,
@@ -158,9 +176,11 @@ public class Main {
          * i dodam je do Schedulera
          */
         scheduler.forAction(()->System.out.println("chyba zaczynam to rozumieć"))
-                .useExecutionTimeProvider(Chron.builder().setMaxExecutionTimes(1).buildNextTimeExecutionProvider())
+                .useExecutionTimeProvider(Chron.builder()
+                        .setMaxExecutionTimes(1)
+                        .buildNextTimeExecutionProvider())
                 .onCompleted(()->System.out.println("Nie wierzę... działa!"))
-                .Schedule();
+                .schedule();
 
         /**
          * to jest tylko po to aby main sam nie kończyl się wykonywać.
@@ -169,7 +189,7 @@ public class Main {
 
     }
 
-    private static void handleException(Throwable ex) {
+    private static void handleException(Exception ex) {
         System.out.println("Wystąpił błąd :(");
     }
 

@@ -68,6 +68,12 @@
       <workItem from="1666359872201" duration="1796000" />
       <workItem from="1666552037746" duration="556000" />
       <workItem from="1666968964866" duration="3476000" />
+      <workItem from="1697439620648" duration="2719000" />
+      <workItem from="1697460461480" duration="4238000" />
+      <workItem from="1697546998316" duration="6319000" />
+      <workItem from="1697634883173" duration="3477000" />
+      <workItem from="1697709999375" duration="49000" />
+      <workItem from="1697722655286" duration="6572000" />
     </task>
     <servers />
   </component>
@@ -95,16 +101,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/example/Main.java</url>
-          <line>42</line>
-          <properties>
-            <option name="lambda-ordinal" value="-1" />
-          </properties>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/example/Main.java</url>
-          <line>189</line>
-          <option name="timeStamp" value="9" />
+          <line>200</line>
+          <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

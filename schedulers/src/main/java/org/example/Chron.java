@@ -38,13 +38,14 @@ public class Chron {
     }
 
     public IProvideNextExecutionTime buildNextTimeExecutionProvider() {
+
         return ()->getNextTime();
     }
 
     private LocalDateTime getNextTime() {
         if(end!=null && end.isBefore(start))
             return null;
-        if(maxCount>0&&this.counter>maxCount) return null;
+        if(maxCount>0 && counter>maxCount) return null;
         if(counter==0){
             counter++;
             return start;
